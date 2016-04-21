@@ -16,18 +16,9 @@ html, body, #atf {
 	background-color: #4cb836;
 }
 
-/*.column{
-	display: inline-block;
-	-webkit-column-count: 1;
-	-webkit-column-gap: 50px;
-	-webkit-column-width:200px;
-	
+h1, h2 {
+	font-family: Avenir, Pier Regular, sans-serif;
 }
-
-.column img{
-	width: 320;
-	height: 180;
-}*/
 
 .column {
     margin: auto;
@@ -36,7 +27,7 @@ html, body, #atf {
     float: left;
 }
 
-.column h1{
+.column h2{
 	text-align:center;
 }
 
