@@ -13,25 +13,9 @@ html, body, #atf {
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items: center;
-}
-
-#main{
 	background-color: #4cb836;
 }
 
-#nav{
-	background-image: url('../imgs/greentransrev.png');
-	background-repeat: repeat-x;
-}
-
-.one{ 
-    background: url(image1.png) no-repeat left top; 
-    }
-
-.two{
-    background: url(image1.png) no-repeat left top;
-    background: url(image2.png) no-repeat right bottom;
-}
 
 h1, h2 {
 	font-family: Avenir, Pier Regular, sans-serif;
