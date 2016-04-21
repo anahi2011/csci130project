@@ -13,7 +13,15 @@ html, body, #atf {
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items: center;
+}
+
+#main{
 	background-color: #4cb836;
+}
+
+#nav{
+	background-image: url('../imgs/greentransrev.png');
+	background-repeat: repeat-x;
 }
 
 .one{ 
