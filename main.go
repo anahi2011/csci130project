@@ -1,4 +1,4 @@
-package csci130project
+package myapp
 
 import (
 	//"golang.org/x/net/context"
@@ -24,19 +24,23 @@ const gcsBucket = "csci-130group.appspot.com"
 var tpl* template.Template
 
 func init(){
-	tpl, _ = template.ParseGlob("templates/")
+	tpl = template.Must(tpl.ParseGlob("templates/*.html"))
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets/"))))
+
+
 	http.HandleFunc("/", homePage)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
+
+
 	http.ListenAndServe(":8080",nil)
 }
 
 func homePage(res http.ResponseWriter, req* http.Request){
-	if req.URL.Path != "/" {
-		http.NotFound(res, req)
-		return
-	}
-	tpl.ExecuteTemplate(res, "home.html", nil)
+	//if req.URL.Path != "/" {
+	//	http.NotFound(res, req)
+	//	return
+	//}
+	tpl.ExecuteTemplate(res, "index.html", nil)
 }
 
 //func putFile(ctx context.Context, name string, rdr io.Reader) error {
