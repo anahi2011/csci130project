@@ -16,6 +16,15 @@ html, body, #atf {
 	background-color: #4cb836;
 }
 
+.one{ 
+    background: url(image1.png) no-repeat left top; 
+    }
+
+.two{
+    background: url(image1.png) no-repeat left top;
+    background: url(image2.png) no-repeat right bottom;
+}
+
 h1, h2 {
 	font-family: Avenir, Pier Regular, sans-serif;
 }
