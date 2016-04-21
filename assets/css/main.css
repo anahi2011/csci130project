@@ -13,4 +13,34 @@ html, body, #atf {
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items: center;
+	background-color: #4cb836;
+}
+
+/*.column{
+	display: inline-block;
+	-webkit-column-count: 1;
+	-webkit-column-gap: 50px;
+	-webkit-column-width:200px;
+	
+}
+
+.column img{
+	width: 320;
+	height: 180;
+}*/
+
+.column {
+    margin: auto;
+    display: inline-block;
+    width: 25%;
+    float: left;
+}
+
+.column h1{
+	text-align:center;
+}
+
+.greenbg{
+	background-image: url("../imgs/greentrans.png");
+	background-repeat: repeat-x;
 }
