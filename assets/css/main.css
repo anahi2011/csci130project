@@ -34,7 +34,7 @@ h1 {
 	width: 100%;
 	border-bottom: 1px solid black;
 	display:flex;
-	text-align:right;
+	align-items:right;
 }
 
 #nav a{
@@ -60,11 +60,11 @@ h1 {
     text-align:center;
 }
 
-#btf #bgimg{
-/*    background-image: url("../imgs/orangetrans.png");
-    background-repeat: repeat-x;*/
+/*#btf #bgimg{
+    background-image: url("../imgs/orangetrans.png");
+    background-repeat: repeat-x;
     overflow:hidden;
-}
+}*/
 
 #contacts{
     margin: 0px;
