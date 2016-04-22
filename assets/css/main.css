@@ -1,5 +1,5 @@
 /*Above the fold design*/
-html, body, #atf {
+html, body, #atf, #btf {
 	padding: 0;
 	margin: 0;
 	border:0;
@@ -13,12 +13,26 @@ html, body, #atf {
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items: center;
-	background-color: #4cb836;
+	background-color: #7cff6e;
 }
 
 
-h1, h2 {
+h1, h2, h3 {
 	font-family: Avenir, Pier Regular, sans-serif;
+}
+
+h1 {
+	font-size: 48px;
+	color: white;
+	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+#btf {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	justify-content: center;
+	align-items:center;
 }
 
 .column {
@@ -28,7 +42,7 @@ h1, h2 {
     float: left;
 }
 
-.column h2{
+.column h3{
 	text-align:center;
 }
 
