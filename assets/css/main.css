@@ -17,7 +17,7 @@ html, body, #atf, #btf {
 }
 
 
-h1, h2, h3 {
+h1, h2, h3, p {
 	font-family: Avenir, Pier Regular, sans-serif;
 }
 
@@ -33,6 +33,25 @@ h1 {
 	flex-wrap: nowrap;
 	justify-content: center;
 	align-items:center;
+}
+
+#btf p{
+	width:200px;
+	text-align:center; 
+}
+
+#btf #bgimg{
+	margin:0px;
+	padding: 0px;
+	height: 50px;
+	bottom: 0px;
+}
+
+#contacts{
+	margin: 0px;
+	padding: 0px;
+	border: 0;
+	background-color:#ffa14d;
 }
 
 .column {
