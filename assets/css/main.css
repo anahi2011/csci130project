@@ -1,57 +1,57 @@
 /*Above the fold design*/
 html, body, #atf, #btf {
-	padding: 0;
-	margin: 0;
-	border:0;
-	height: 100%;
-	box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+    border:0;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 #atf {
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	justify-content: center;
-	align-items: center;
-	background-color: #7cff6e;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #7cff6e;
 }
 
 
 h1, h2, h3, p {
-	font-family: Avenir, Pier Regular, sans-serif;
+    font-family: Avenir, Pier Regular, sans-serif;
 }
 
 h1 {
-	font-size: 48px;
-	color: white;
-	text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    font-size: 48px;
+    color: white;
+    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
 }
 
 #btf {
-	display: flex;
-	flex-direction: column;
-	flex-wrap: nowrap;
-	justify-content: center;
-	align-items:center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items:center;
 }
 
 #btf p{
-	width:200px;
-	text-align:center; 
+    width:200px;
+    text-align:center;
 }
 
 #btf #bgimg{
-	margin:0px;
-	padding: 0px;
-	height: 50px;
-	bottom: 0px;
+    background-image: url("../imgs/orangetrans.png");
+    background-repeat: repeat-x;
+    overflow:hidden;
 }
 
 #contacts{
-	margin: 0px;
-	padding: 0px;
-	border: 0;
-	background-color:#ffa14d;
+    margin: 0px;
+    padding: 0px;
+    border: 0;
+    background-color:#ffa14d;
+    overflow:hidden;
 }
 
 .column {
@@ -62,10 +62,15 @@ h1 {
 }
 
 .column h3{
-	text-align:center;
+    text-align:center;
 }
 
 .greenbg{
-	background-image: url("../imgs/greentrans.png");
-	background-repeat: repeat-x;
+    background-image: url("../imgs/greentrans.png");
+    background-repeat: repeat-x;
+}
+
+.greenbg{
+    background-image: url("../imgs/greentrans.png");
+    background-repeat: repeat-x;
 }
