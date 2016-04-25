@@ -223,7 +223,7 @@ div #slideshow figure{
     }
 }
 
-@media screen and (max-width:500px){
+@media screen and (max-width:540px){
     div #slideshow figure img {
         width: 20%;
         height: 40%;
@@ -234,10 +234,6 @@ div #slideshow figure{
         height: 35px;
     }
 }
-
-
-
-
 
 
 @media screen and ( max-height: 200px) ,and, (max-width: 200){
