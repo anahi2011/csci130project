@@ -32,33 +32,33 @@ h1 {
 }
 
 @keyframes slideanim{
-	0% {left 0%;}
-	20% {left: 0%;}
-	25% {left: -100%;}
-	45% {left: -100%;}
-	50% {left: -200%;}
-	70% {left: -200%;}
-	75% {left: -300%;}
-	95% {left: -300%;}
-	100% {left: -400%;}
+    0% {left 0%;}
+    20% {left: 0%;}
+    25% {left: -100%;}
+    45% {left: -100%;}
+    50% {left: -200%;}
+    70% {left: -200%;}
+    75% {left: -300%;}
+    95% {left: -300%;}
+    100% {left: -400%;}
 }
 
 div #slideshow{
-	overflow: hidden
+    overflow: hidden
 }
 
 div #slideshow figure img {
-	width: 10%;
-	height: 50%;
-	float: left;
+    width: 10%;
+    height: 50%;
+    float: left;
 }
 
 div #slideshow figure{
-	position: relative;
-	width: 500%;
-	margin: 0;
-	left: 0;
-	animation: 30s slideanim infinite;
+    position: relative;
+    width: 500%;
+    margin: 0;
+    left: 0;
+    animation: 30s slideanim infinite;
 }
 
 /*Navigation*/
@@ -76,19 +76,19 @@ div #slideshow figure{
 }
 
 #nav ul{
-	list-style: none;
-	padding:0;
-	margin:0;
-	display: flex;
-	flex-direction:row;
-	justify-content:flex-end;
-	width:100%;
+    list-style: none;
+    padding:0;
+    margin:0;
+    display: flex;
+    flex-direction:row;
+    justify-content:flex-end;
+    width:100%;
 }
 
 #nav ul li{
-	margin-right: 10px;
-	display: block;
-	text-align:right;
+    margin-right: 10px;
+    display: block;
+    text-align:right;
 }
 
 #nav a{
@@ -142,6 +142,7 @@ div #slideshow figure{
 
 
 @media screen and (max-width: 790px){
+
     .column {
         margin: auto;
         display: inline-block;
@@ -197,8 +198,6 @@ div #slideshow figure{
         flex-wrap: nowrap;
         align-items: center;
         background-color: #7cff6e;
-
-
     }
 
     #atf img{
@@ -223,6 +222,23 @@ div #slideshow figure{
 
     }
 }
+
+@media screen and (max-width:500px){
+    div #slideshow figure img {
+        width: 20%;
+        height: 40%;
+        float: left;
+    }
+
+    #nav{
+        height: 35px;
+    }
+}
+
+
+
+
+
 
 @media screen and ( max-height: 200px) ,and, (max-width: 200){
     #atf h1{
