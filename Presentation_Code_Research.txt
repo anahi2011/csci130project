@@ -1,0 +1,60 @@
+==========
+FLEX-BOX
+==========
+-ensures elements behave predictably when page
+ layout must accommodate different screen size
+ 
+- display: flex
+    -A flex container is declared by setting the 
+     display property of an element to flex (rendered as a block)
+     
+- flex-direction: specifies direction of flexible items inside the container.
+                  
+                  -in this case we used flex-direction: column 
+                   which allows horizontal text to be laid out vertically.
+                   
+-align-items: 
+            -property vertically aligns flexible container item when
+             items do not use all available space.
+
+    align-items: center   
+            - items are positioned at center of container vertically.
+            
+-flex-wrap: 
+        -property specifies whether item should wrap or not, if there
+            is not enough room for them on one flex line
+            
+    flex-wrap: no wrap 
+        - default -value, items will not wrap
+        
+-justify-content:
+        -items are positioned at center of container
+        
+        
+
+==========
+AbvTheFld
+==========
+
+-shows certain content above the fold...
+
+height 100% will take up whole page above the fold
+
+html, body, #atf{
+        height: 100%;
+        }
+        
+        
+        
+====================
+Using Media Queries
+====================
+
+its uses @media rule to include block of 
+css properties only if certain conditions are met
+
+in this case we are checking screen width, 
+and height to determine which instructions to carry out
+
+@media screen and (max-width: 700px)
+    media query will be true when viewport is 700px wide or less
