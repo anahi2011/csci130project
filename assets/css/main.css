@@ -130,7 +130,7 @@ div #slideshow figure{
     float: left;
 }
 
-.column h3{
+.column h3, p{
     text-align:center;
 }
 
