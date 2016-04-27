@@ -1,6 +1,16 @@
 ==========
 FLEX-BOX
 ==========
+
+#atf {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #7cff6e;
+}
+
 -ensures elements behave predictably when page
  layout must accommodate different screen size
  
@@ -36,19 +46,28 @@ FLEX-BOX
 AbvTheFld
 ==========
 
+html, body, #atf{
+        height: 100%;
+        }
+        
+        
 -shows certain content above the fold...
 
 height 100% will take up whole page above the fold
 
-html, body, #atf{
-        height: 100%;
-        }
         
         
         
 ====================
 Using Media Queries
 ====================
+
+@media screen and (max-width: 790px){
+
+    .column {
+        width: 100%;
+    }
+
 
 its uses @media rule to include block of 
 css properties only if certain conditions are met
