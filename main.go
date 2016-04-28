@@ -6,6 +6,7 @@ import (
 	//"google.golang.org/cloud/storage"
 	//"io"
 	"html/template"
+	"strings"
 )
 
 const gcsBucket = "csci-130group.appspot.com"
@@ -28,19 +29,46 @@ func init(){
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets/"))))
 
 
-	http.HandleFunc("/", homePage)
+	http.HandleFunc("/", index)
+	http.HandleFunc("/login", login)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 
 
 	http.ListenAndServe(":8080",nil)
 }
 
-func homePage(res http.ResponseWriter, req* http.Request){
+func index(res http.ResponseWriter, req* http.Request){
 	//if req.URL.Path != "/" {
 	//	http.NotFound(res, req)
 	//	return
 	//}
+	cookie := genCookie(res, req)
+	http.SetCookie(res, cookie)
 	tpl.ExecuteTemplate(res, "index.html", nil)
+}
+
+func login(res http.ResponseWriter, req *http.Request){
+	cookie := genCookie(res, req)
+	http.SetCookie(res, cookie)
+	tpl.ExecuteTemplate(res, "login.html", nil)
+}
+
+
+func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
+	cookie, err := req.Cookie("session-ferret")
+	if err != nil{
+		cookie = newVisitor()
+		http.SetCookie(res, cookie)
+	}
+	if strings.Count(cookie.Value, "|") != 2{
+		cookie = newVisitor()
+		http.SetCookie(res, cookie)
+	}
+	if tampered(cookie.Value){
+		cookie = newVisitor()
+		http.SetCookie(res, cookie)
+	}
+	return cookie
 }
 
 //func putFile(ctx context.Context, name string, rdr io.Reader) error {
