@@ -1,0 +1,127 @@
+//Global session manager
+type Manager struct{
+	cookieName 	string			//private cookie name
+	lock		sync.Mutex}		//protects session
+	provider	Provider
+	maxlifetime	int64
+	}
+	
+//this will create a new session manager initialized to the values passed
+func NewManager(provideName, cookieName string, maxlifetime int64)(*Manager, error){
+	provider, ok := provides[provideName]
+	if(!ok){
+		return nil, fmt.Errorf("session: unknown provide %q (forgotten import?)", provideName)
+	}
+	return &Manager{
+				provider: provider,
+				cookieName: cookieName,
+				maxlifetime: maxlifetime
+			}, nil
+}
+
+
+//Provider interface represents the underlying structure of our session manager
+// We can save sessions in different ways so we have to "abstract" this 
+//Init implements the initialization of a session and returns a new session if it succeeds
+//Read returns a session represented by the corresponding sid. creates a new session and
+//	returns it if it does not already exist
+//Destroy given an sid, deletes the corresponding session 
+//GC deletes expired session variables according to maxLifeTime
+
+type Provider interface{
+	SessionInit(sid string) (Session, error)
+	SessionRead(sid string) (Session, error)
+	SessionDestroy(sid string) error
+	SessionGC(maxLifeTime int64)
+	}
+		
+type Session interface{
+	Set(key, value interface{}) error	//sets session value
+	Get(key interface{}) interface{}	//get session value
+	Delete(key interface{}) error		//delete session value
+	SessionID() string					//returns current sessionID
+}
+
+//register makes a session provider available by the provided name
+//if a register is called twice with the same name or if the driver is nil
+//then we will panic
+
+//this map is where we will store our providers based on their name
+var provides = make(map[string]Provider)
+
+func Register(name string, provider Provider){
+	if(povider == nil{
+		panic("session: Register provide is nil")
+	}
+	if _, dup := provides[name]; dup{
+		panic("session: Register called twice for provide " + name)
+	}
+	provides[name] = provider	
+}
+	
+	
+	
+//creates unique session IDs
+func (manager *Manager) sessionId() string{
+	b := make([]byte, 32)
+	if _, err := io.ReadFull(rand.Reader, b); err != nil{
+		return ""
+	}
+		return base64.URLEncoding.EncodeToString(B)
+}
+
+
+//sessionstart checks if there are any sessions related to the current user
+//it creates a new session if one is not found
+func (manager *Manager) SessionStart(w http.ResponseWriter, r* http.Request) (session Session){
+	manager.lock.Lock()
+	cookie, err := r.Cookie(manager.cookieName)
+	
+	if((err != nil) || (cookie.Value == "")){
+		sid := manager.sessionId()
+		session, _ = manager.provider.SessionInit(sid)
+		cookie := http.Cookie{
+			Name:	manager.cookieName,
+			Value:	url.QueryEscape(sid),
+			Path: 	"/",
+			HttpOnly:	true,
+			MaxAge:	int(manager.maxlifetime) 
+		}
+		http.SetCookie(w, &cookie)
+	}else{
+		sid, _ := url.QueryUnescape(cookie.Value)
+		session, _ = manager.provider.SessionRead(sid)
+	}
+	return
+}
+
+//Destroy session based on sessionid.
+//cookies expiration date is set to -1 which means it will be 
+//erased from memory when the user closes their browser
+func (manager *Manager) SessionDestroy(w http.ResponseWriter, r* http.Request){
+	cookie, err := r.Cookie(manager.cookieName)
+	if((err != nil) || (cookie.Value == ""){
+		return
+	} else{
+		manager.lock.Lock()
+		defer manager.lock.Unlock()
+		manager.provider.SessionDestroy(cookie.Value)
+		expiration := time.Now()
+		cookie := http.Cookie{
+			Name:	manager.cookieName,
+			Path:	"/",
+			HttpOnly:	true,
+			Expires:	expiration,
+			MaxAge:		-1
+		}
+		http.SetCookie(w, &cookie)
+	}
+}
+
+//lets the session manager delete a session
+func (manager *Manager) GC(){
+	manager.lock.Lock()
+	defer manager.lock.Unlock()
+	manager.provider.SessionGC(manager.maxlifetime)
+	time.AfterFunc(time.Duration(manager.maxlifetime), func(){manager.GC()})
+}
