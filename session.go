@@ -15,8 +15,11 @@ import (
 //then we make a cookie that has
 // uuid|modelEncodeToB64|HMAC as its value
 func newVisitor() *http.Cookie {
+
+	//mm is a string. it is a json string of the model data
 	mm := initModel()
 	id, _ := uuid.NewV4()
+
 	return makeCookie(mm, id.String())
 }
 

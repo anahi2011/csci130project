@@ -48,6 +48,9 @@ func init(){
 
 */
 }
+
+//every time the user loads the page they get a new uuid....
+//they shouldn't get a new one...
 func index(res http.ResponseWriter, req* http.Request){
 	if req.URL.Path != "/" {
 		http.NotFound(res, req)
@@ -154,18 +157,33 @@ func register(res http.ResponseWriter, req *http.Request){
 //looks for cookie and returns it.
 //if it doesn't exits we make a new one and then sets it and returns it.
 func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
-	cookie, err := req.Cookie("session-fino")
+
+	//jesus christ matt... you named the cookie "session-ferret"
+	//but you are searching for "session-fino" why???>?>?
+	//cookie, err := req.Cookie("session-fino")
+	cookie, err := req.Cookie("session-ferret")
 	if err != nil{
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
+		//return cause if we made the cookie... welll theres no need to
+		//check if it was tampered...
+		return cookie
 	}
 
+	return cookie
+
+	//why would we be checking for the cookie being tampered if our
+	//function is supposed to make a cookie.....
+	//matt functions are supposed to do ONE thing...
+	//make it all modular.....
+
+	/*
 	//wtf does this do??????
 	//so we pass the cookies value, and then it returns the
 	//number of things being split up by the delimiter? |
 	//so we check that the cookie has 2 pipes? |||||
 	//dafuq matt....... if it doesn't have 2 pipes, we
-	//treat them as a new user?.... like i get it, but...
+	//treat them as a new user?.... like i kind of get it but dont, but...
 	//why check the delimiter???
 	if strings.Count(cookie.Value, "|") != 2{
 		cookie = newVisitor()
@@ -186,6 +204,8 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 		http.SetCookie(res, cookie)
 	}
 	return cookie
+
+	*/
 }
 
 

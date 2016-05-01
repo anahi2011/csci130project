@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+//returns an hmac code
 func getCode(data string) string {
 	//wow matt. our key is so secure.....
 	h := hmac.New(sha256.New, []byte("key"))
