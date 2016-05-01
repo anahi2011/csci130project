@@ -86,6 +86,7 @@ func index(res http.ResponseWriter, req* http.Request){
 	io.WriteString(res, "UUID: " + id)
 }
 
+//wtf is going on with this login....
 func login(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
 	/*if req.Method == "POST"{
@@ -116,6 +117,7 @@ func login(res http.ResponseWriter, req *http.Request){
 	}
 }
 
+//:( the lack of comments makes me want to cry
 func register(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
 	/*if req.Method == "POST"{
@@ -149,7 +151,7 @@ func register(res http.ResponseWriter, req *http.Request){
 }
 
 
-//looks for cookie.
+//looks for cookie and returns it.
 //if it doesn't exits we make a new one and then sets it and returns it.
 func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	cookie, err := req.Cookie("session-fino")
