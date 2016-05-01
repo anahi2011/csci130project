@@ -9,6 +9,7 @@ import(
 	"log"
 )
 
+//what does state mean?????? what does it represent???
 type model struct {
 	Name string
 	Pass string
@@ -16,6 +17,9 @@ type model struct {
 	Pictures []string
 }
 
+//so we give this func a cookie and it gives us a model..
+//the model is retrieved from the cookie. so we decode it from
+// base 64 then we unmarshall it and return it to the caller
 func Model(c *http.Cookie) model {
 	xs := strings.Split(c.Value, "|")
 	usrData := xs[1]

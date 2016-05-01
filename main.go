@@ -21,11 +21,16 @@ type Word struct {
 var tpl* template.Template
 
 func init(){
-	//http.HandleFunc("/", index)
+
 	//http.HandleFunc("/api/check", wordCheck)
+
+	//first we parse our html and serve our css files.
+	//since matt loves local pics, the pictures are also being served....
+	// but we are using gcs links from our ferret bucket.
+	tpl = template.Must(template.ParseGlob("templates/*.html"))
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets/"))))
 
-	tpl = template.Must(template.ParseGlob("templates/*.html"))
+
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/login", login)
@@ -44,15 +49,28 @@ func init(){
 */
 }
 func index(res http.ResponseWriter, req* http.Request){
-	//if req.URL.Path != "/" {
-	//	http.NotFound(res, req)
-	//	return
-	//}
+	if req.URL.Path != "/" {
+		http.NotFound(res, req)
+		return
+	}
+	//so im just trying to figure out what you guys coded ok..
+	//imma comment this stuff
+
+	//so when user enters main webpage we make a cookie. ok
 	cookie := genCookie(res, req)
+
 	m := Model(cookie)
+	//why are we setting the state to truee....
+	// damnit matt comment your fucking code.......
 	m.State = true
 	xs := strings.Split(cookie.Value, "|")
+
+	//remember our cookie value is set up like this
+	// uuid | modelEncodeToB64 | HMAC
 	id := xs[0]
+
+	//why are we assigning a new cookie to the cookie we just made......... FUCK MATTT!!!!!!!
+	//this doesn't make sense.....
 	cookie = currentVisitor(m, id)
 	http.SetCookie(res, cookie)
 /*
@@ -131,16 +149,36 @@ func register(res http.ResponseWriter, req *http.Request){
 }
 
 
+//looks for cookie.
+//if it doesn't exits we make a new one and then sets it and returns it.
 func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	cookie, err := req.Cookie("session-fino")
 	if err != nil{
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
 	}
+
+	//wtf does this do??????
+	//so we pass the cookies value, and then it returns the
+	//number of things being split up by the delimiter? |
+	//so we check that the cookie has 2 pipes? |||||
+	//dafuq matt....... if it doesn't have 2 pipes, we
+	//treat them as a new user?.... like i get it, but...
+	//why check the delimiter???
 	if strings.Count(cookie.Value, "|") != 2{
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
 	}
+
+	//if the user fucked up the cookie we make a new one
+	//we test the cookie using the HMAC code
+	//if you don't know how hmac works. well..
+	//it's not hard. we generate a hmac code with our function.
+	//we put it in our cookie with the data that got hmaced. so when
+	//we get the cookie back we hmac the data and compare it to the hmac code.
+	//the reason this works for us to verify is because the user doesn't know the secret
+	//key we use to make our hmac code. Since matt chose a super secure key, nobody should
+	//be able to crack it.
 	if tampered(cookie.Value){
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
