@@ -62,10 +62,14 @@ func index(res http.ResponseWriter, req* http.Request){
 	//so when user enters main webpage we make a cookie. ok
 	cookie := genCookie(res, req)
 
-	m := Model(cookie)
-	//why are we setting the state to truee....
-	// damnit matt comment your fucking code.......
-	m.State = true
+
+	//why are you making a new model..... why???
+	//m := Model(cookie)
+	////why are we setting the state to truee....
+	//// damnit matt comment your fucking code.......
+	//m.State = true
+
+	//we split up the values in our cookie by the delimiter |
 	xs := strings.Split(cookie.Value, "|")
 
 	//remember our cookie value is set up like this
@@ -74,7 +78,9 @@ func index(res http.ResponseWriter, req* http.Request){
 
 	//why are we assigning a new cookie to the cookie we just made......... FUCK MATTT!!!!!!!
 	//this doesn't make sense.....
-	cookie = currentVisitor(m, id)
+	//cookie = currentVisitor(m, id)
+
+
 	http.SetCookie(res, cookie)
 /*
 		key := datastore.NewKey(ctx, "Dictionary", w.Name, 0, nil)
