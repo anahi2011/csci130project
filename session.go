@@ -44,6 +44,7 @@ func marshalModel(m model) []byte{
 func initModel() []byte {
 	m := model{
 		Name: "",
+		Pass: "",
 		State: false,
 		Pictures: []string{},
 	}
