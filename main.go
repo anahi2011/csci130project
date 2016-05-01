@@ -1,44 +1,48 @@
 package myapp
 
+
 import (
-	//"golang.org/x/net/context"
-	"net/http"
-	//"google.golang.org/cloud/storage"
-	//"io"
 	"html/template"
 	"strings"
 	"io"
+	"net/http"
+	//"encoding/json"
+	//"google.golang.org/appengine"
+	//"google.golang.org/appengine/datastore"
+	//"google.golang.org/appengine/log"
 )
 
 const gcsBucket = "csci-130group.appspot.com"
 
-
-//we could use this to pass it to our functions
-//that way we don't have to have too many parameters
-//NOT SURE IF WE WILL USE THIS THOUGH
-//type demo struct{
-//	ctx	context.Context
-//	w	http.ResponseWriter
-//	bucket	*storage.BucketHandle
-//	client 	*storage.Client
-//}
+type Word struct {
+	Name string
+}
 
 var tpl* template.Template
 
 func init(){
-	tpl = template.Must(tpl.ParseGlob("templates/*.html"))
+	//http.HandleFunc("/", index)
+	//http.HandleFunc("/api/check", wordCheck)
 	http.Handle("/assets/", http.StripPrefix("/assets", http.FileServer(http.Dir("assets/"))))
 
+	tpl = template.Must(template.ParseGlob("templates/*.html"))
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/register", register)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
+/*func index(res http.ResponseWriter, req* http.Request){
+	if req.Method == "POST" {
+>>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
 
+		var w Word
+		w.Name = req.FormValue("new-word")
 
-	http.ListenAndServe(":8080",nil)
+		ctx := appengine.NewContext(req)
+		log.Infof(ctx, "WORD SUBMITTED: %v", w.Name)
+
+*/
 }
-
 func index(res http.ResponseWriter, req* http.Request){
 	//if req.URL.Path != "/" {
 	//	http.NotFound(res, req)
@@ -51,6 +55,15 @@ func index(res http.ResponseWriter, req* http.Request){
 	id := xs[0]
 	cookie = currentVisitor(m, id)
 	http.SetCookie(res, cookie)
+/*
+		key := datastore.NewKey(ctx, "Dictionary", w.Name, 0, nil)
+		_, err := datastore.Put(ctx, key, &w)
+		if err != nil {
+			http.Error(res, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+>>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2*/
 	tpl.ExecuteTemplate(res, "index.html", nil)
 	io.WriteString(res, "UUID: " + id)
 }
@@ -119,7 +132,7 @@ func register(res http.ResponseWriter, req *http.Request){
 
 
 func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
-	cookie, err := req.Cookie("session-ferret")
+	cookie, err := req.Cookie("session-fino")
 	if err != nil{
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
@@ -135,41 +148,25 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	return cookie
 }
 
-//func putFile(ctx context.Context, name string, rdr io.Reader) error {
-//
-//	client, err := storage.NewClient(ctx)
-//	if err != nil {
-//		return err
-//	}
-//	defer client.Close()
-//
-//	writer := client.Bucket(gcsBucket).Object(name).NewWriter(ctx)
-//
-//	io.Copy(writer, rdr)
-//	// check for errors on io.Copy in production code!
-//	return writer.Close()
-//}
-//
-//func getFile(ctx context.Context, name string) (io.ReadCloser, error) {
-//	client, err := storage.NewClient(ctx)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer client.Close()
-//
-//	return client.Bucket(gcsBucket).Object(name).NewReader(ctx)
-//}
-//
-//func getFileLink(ctx context.Context, name string) (string, error) {
-//	client, err := storage.NewClient(ctx)
-//	if err != nil {
-//		return "", err
-//	}
-//	defer client.Close()
-//
-//	attrs, err := client.Bucket(gcsBucket).Object(name).Attrs(ctx)
-//	if err != nil {
-//		return "", err
-//	}
-//	return attrs.MediaLink, nil
-//}
+
+
+/*>>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
+
+func wordCheck(res http.ResponseWriter, req *http.Request) {
+
+	ctx := appengine.NewContext(req)
+
+	// acquire the incoming word
+	var w Word
+	json.NewDecoder(req.Body).Decode(&w)
+	log.Infof(ctx, "ENTERED wordCheck - w.Name: %v", w.Name)
+
+	// check the incoming word against the datastore
+	key := datastore.NewKey(ctx, "Dictionary", w.Name, 0, nil)
+	err := datastore.Get(ctx, key, &w)
+	if err != nil {
+		json.NewEncoder(res).Encode("false")
+		return
+	}
+	json.NewEncoder(res).Encode("true")
+}*/
