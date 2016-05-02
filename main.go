@@ -34,6 +34,7 @@ func init(){
 
 	http.HandleFunc("/", index)
 	http.HandleFunc("/login", login)
+	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/register", register)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 /*func index(res http.ResponseWriter, req* http.Request){
@@ -67,20 +68,17 @@ func index(res http.ResponseWriter, req* http.Request){
 	//Matt: State is only set to true if user has visted the home page
 	//Matt: If state is true then display uuid on bottom to maintain state 
 	//Matt: ARE YOU FUCKING HAPPY ROBERTO!!!!!!!
-	m.State = true
+	//m.State = true
 
 	//we split up the values in our cookie by the delimiter |
-	xs := strings.Split(cookie.Value, "|")
 
 	//remember our cookie value is set up like this
 	// uuid | modelEncodeToB64 | HMAC
-	id := xs[0]
 
 	//why are we assigning a new cookie to the cookie we just made......... FUCK MATTT!!!!!!!
 	//this doesn't make sense.....
 	//Matt: UPDATE THE COOKIE WITH THE MODEL THAT SETS STATE TO TRUE
 	//Matt: ARE YOU FUCKING HAPPY ROBERTO!!!!!!!
-	cookie = currentVisitor(m, id)
 
 
 	http.SetCookie(res, cookie)
@@ -93,21 +91,36 @@ func index(res http.ResponseWriter, req* http.Request){
 		}
 	}
 >>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2*/
-	tpl.ExecuteTemplate(res, "index.html", nil)
-	io.WriteString(res, "UUID: " + id)
+	tpl.ExecuteTemplate(res, "index.html", m)
+	//io.WriteString(res, "UUID: " + id)
 }
 
 //wtf is going on with this login....
 func login(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
-	m := Model(cookie)
-	xs := strings.Split(cookie.Value, "|")
-	id := xs[0]
-	http.SetCookie(res, cookie)
-	tpl.ExecuteTemplate(res, "login.html", nil)
-	if(m.State == true){
-		io.WriteString(res, "UUID: " + id)
+	if req.Method == "POST" && req.FormValue("password") == "secret"{
+		m := Model(cookie)
+		m.State = true
+		m.Name = req.FormValue("name")
+		xs := strings.Split(cookie.Value, "|")
+		id := xs[0]
+
+		cookie := currentVisitor(m, id)
+		http.SetCookie(res, cookie)
+
+		http.Redirect(res, req, "/", 302)
+		return
 	}
+	tpl.ExecuteTemplate(res, "login.html", nil)
+	/*if(m.State == true){
+		io.WriteString(res, "UUID: " + id)
+	}*/
+}
+
+func logout(res http.ResponseWriter, req *http.Request){
+	cookie := newVisitor()
+	http.SetCookie(res, cookie)
+	http.Redirect(res, req, "/", 302)
 }
 
 //:( the lack of comments makes me want to cry
