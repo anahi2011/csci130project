@@ -63,11 +63,11 @@ func index(res http.ResponseWriter, req* http.Request){
 	cookie := genCookie(res, req)
 
 
-	//why are you making a new model..... why???
-	//m := Model(cookie)
-	////why are we setting the state to truee....
-	//// damnit matt comment your fucking code.......
-	//m.State = true
+	m := Model(cookie)
+	//Matt: State is only set to true if user has visted the home page
+	//Matt: If state is true then display uuid on bottom to maintain state 
+	//Matt: ARE YOU FUCKING HAPPY ROBERTO!!!!!!!
+	m.State = true
 
 	//we split up the values in our cookie by the delimiter |
 	xs := strings.Split(cookie.Value, "|")
@@ -78,7 +78,9 @@ func index(res http.ResponseWriter, req* http.Request){
 
 	//why are we assigning a new cookie to the cookie we just made......... FUCK MATTT!!!!!!!
 	//this doesn't make sense.....
-	//cookie = currentVisitor(m, id)
+	//Matt: UPDATE THE COOKIE WITH THE MODEL THAT SETS STATE TO TRUE
+	//Matt: ARE YOU FUCKING HAPPY ROBERTO!!!!!!!
+	cookie = currentVisitor(m, id)
 
 
 	http.SetCookie(res, cookie)
@@ -98,24 +100,6 @@ func index(res http.ResponseWriter, req* http.Request){
 //wtf is going on with this login....
 func login(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
-	/*if req.Method == "POST"{
-		exists, _ := userExists(req.FormValue("name"))
-		if(exists == false){
-			http.Redirect(res, req, "/login", 302)
-			return
-		}
-		mod := getUser(req.FormValue("name"))
-		if mod.Pass != req.FormValue("password"){
-			http.Redirect(res, req, "/login", 302)
-			return
-		}
-		xs := strings.Split(cookie.Value, "|")
-		id := xs[0]
-		mod.State = true
-		cookie = currentVisitor(mod, id)
-		http.SetCookie(res, cookie)
-
-	}*/
 	m := Model(cookie)
 	xs := strings.Split(cookie.Value, "|")
 	id := xs[0]
@@ -129,26 +113,6 @@ func login(res http.ResponseWriter, req *http.Request){
 //:( the lack of comments makes me want to cry
 func register(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
-	/*if req.Method == "POST"{
-		exists, _ := userExists(req.FormValue("name"))
-		if(exists){
-			http.Redirect(res, req, "/register", 302)
-			return
-		}
-		m := Model(cookie)
-		m.State = false;
-		m.Name = req.FormValue("name")
-		m.Pass = req.FormValue("password")
-		xs := strings.Split(cookie.Value, "|")
-		id := xs[0]
-		writeFile(cookie);
-		m.State = true;
-		cookie := currentVisitor(m, id)
-		http.SetCookie(res, cookie)
-
-		http.Redirect(res, req, "/", 302)
-		return
-	}*/
 	m := Model(cookie)
 	xs := strings.Split(cookie.Value, "|")
 	id := xs[0]
@@ -194,7 +158,7 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	if strings.Count(cookie.Value, "|") != 2{
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
-	}
+	}*/
 
 	//if the user fucked up the cookie we make a new one
 	//we test the cookie using the HMAC code
@@ -211,7 +175,6 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	}
 	return cookie
 
-	*/
 }
 
 
