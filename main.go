@@ -57,28 +57,18 @@ func index(res http.ResponseWriter, req* http.Request){
 		http.NotFound(res, req)
 		return
 	}
-	//so im just trying to figure out what you guys coded ok..
-	//imma comment this stuff
 
 	//so when user enters main webpage we make a cookie. ok
 	cookie := genCookie(res, req)
 
 
 	m := Model(cookie)
-	//Matt: State is only set to true if user has visted the home page
-	//Matt: If state is true then display uuid on bottom to maintain state 
-	//Matt: ARE YOU FUCKING HAPPY ROBERTO!!!!!!!
-	//m.State = true
 
 	//we split up the values in our cookie by the delimiter |
 
 	//remember our cookie value is set up like this
 	// uuid | modelEncodeToB64 | HMAC
 
-	//why are we assigning a new cookie to the cookie we just made......... FUCK MATTT!!!!!!!
-	//this doesn't make sense.....
-	//Matt: UPDATE THE COOKIE WITH THE MODEL THAT SETS STATE TO TRUE
-	//Matt: ARE YOU FUCKING HAPPY ROBERTO!!!!!!!
 
 
 	http.SetCookie(res, cookie)
@@ -92,7 +82,6 @@ func index(res http.ResponseWriter, req* http.Request){
 	}
 >>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2*/
 	tpl.ExecuteTemplate(res, "index.html", m)
-	//io.WriteString(res, "UUID: " + id)
 }
 
 //wtf is going on with this login....
@@ -112,9 +101,6 @@ func login(res http.ResponseWriter, req *http.Request){
 		return
 	}
 	tpl.ExecuteTemplate(res, "login.html", nil)
-	/*if(m.State == true){
-		io.WriteString(res, "UUID: " + id)
-	}*/
 }
 
 func logout(res http.ResponseWriter, req *http.Request){
@@ -131,9 +117,6 @@ func register(res http.ResponseWriter, req *http.Request){
 	id := xs[0]
 	http.SetCookie(res, cookie)
 	tpl.ExecuteTemplate(res, "register.html", nil)
-	if(m.State == true){
-		io.WriteString(res, "UUID: " + id)
-	}
 }
 
 
@@ -141,9 +124,6 @@ func register(res http.ResponseWriter, req *http.Request){
 //if it doesn't exits we make a new one and then sets it and returns it.
 func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 
-	//jesus christ matt... you named the cookie "session-ferret"
-	//but you are searching for "session-fino" why???>?>?
-	//cookie, err := req.Cookie("session-fino")
 	cookie, err := req.Cookie("session-ferret")
 	if err != nil{
 		cookie = newVisitor()
@@ -155,23 +135,10 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 
 	return cookie
 
-	//why would we be checking for the cookie being tampered if our
-	//function is supposed to make a cookie.....
-	//matt functions are supposed to do ONE thing...
-	//make it all modular.....
-
-	/*
-	//wtf does this do??????
-	//so we pass the cookies value, and then it returns the
-	//number of things being split up by the delimiter? |
-	//so we check that the cookie has 2 pipes? |||||
-	//dafuq matt....... if it doesn't have 2 pipes, we
-	//treat them as a new user?.... like i kind of get it but dont, but...
-	//why check the delimiter???
 	if strings.Count(cookie.Value, "|") != 2{
 		cookie = newVisitor()
 		http.SetCookie(res, cookie)
-	}*/
+	}
 
 	//if the user fucked up the cookie we make a new one
 	//we test the cookie using the HMAC code
