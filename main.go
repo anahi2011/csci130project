@@ -4,7 +4,7 @@ package myapp
 import (
 	"html/template"
 	"strings"
-	"io"
+	//"io"
 	"net/http"
 	//"encoding/json"
 	//"google.golang.org/appengine"
@@ -112,9 +112,6 @@ func logout(res http.ResponseWriter, req *http.Request){
 //:( the lack of comments makes me want to cry
 func register(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
-	m := Model(cookie)
-	xs := strings.Split(cookie.Value, "|")
-	id := xs[0]
 	http.SetCookie(res, cookie)
 	tpl.ExecuteTemplate(res, "register.html", nil)
 }
