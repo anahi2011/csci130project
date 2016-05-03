@@ -7,6 +7,11 @@ import (
 	//"io"
 	"net/http"
 	"fmt"
+
+	"encoding/json"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/urlfetch"
+
 	//"encoding/json"
 	//"google.golang.org/appengine"
 	//"google.golang.org/appengine/datastore"
@@ -38,6 +43,10 @@ func init(){
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/register", register)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
+
+	http.HandleFunc("/gifs", gifs)
+
+
 /*func index(res http.ResponseWriter, req* http.Request){
 	if req.Method == "POST" {
 >>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
@@ -194,6 +203,45 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 
 
 
+
+func gifs(res http.ResponseWriter, req *http.Request) {
+	ctx := appengine.NewContext(req)
+
+	t := req.FormValue("term")
+
+	client := urlfetch.Client(ctx)
+	result, err := client.Get("http://api.giphy.com/v1/gifs/search?q=" + t + "&api_key=dc6zaTOxFJmzC")
+	if err != nil {
+		http.Error(res, err.Error(), 500)
+		return
+	}
+	defer result.Body.Close()
+	var obj struct {
+		Data []struct {
+			URL    string `json:"url"`
+			Images struct {
+					   Original struct {
+									URL string
+								}
+				   }
+		}
+	}
+	err = json.NewDecoder(result.Body).Decode(&obj)
+	if err != nil {
+		http.Error(res, err.Error(), 500)
+		return
+	}
+	for _, img := range obj.Data {
+		fmt.Fprintf(res, `<a href="%v">%v</a><img src="%v"><br>`, img.URL, img.URL, img.Images.Original.URL)
+	}
+	tpl.ExecuteTemplate(res,"gifs.html", nil)
+}
+
+
+
+
+
+
 /*>>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
 
 func wordCheck(res http.ResponseWriter, req *http.Request) {
@@ -214,3 +262,4 @@ func wordCheck(res http.ResponseWriter, req *http.Request) {
 	}
 	json.NewEncoder(res).Encode("true")
 }*/
+
