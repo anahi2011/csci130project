@@ -6,6 +6,7 @@ import (
 	"strings"
 	//"io"
 	"net/http"
+	"fmt"
 	//"encoding/json"
 	//"google.golang.org/appengine"
 	//"google.golang.org/appengine/datastore"
@@ -87,14 +88,32 @@ func index(res http.ResponseWriter, req* http.Request){
 //wtf is going on with this login....
 func login(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
-	if req.Method == "POST" && req.FormValue("password") == "secret"{
-		m := Model(cookie)
-		m.State = true
-		m.Name = req.FormValue("name")
+	if req.Method == "POST"{
+		if(req.FormValue("name") == "" || req.FormValue("password") == ""){
+			fmt.Printf("Type in something dipshit")
+			http.Redirect(res, req, "/login", 302)
+			return
+		}
+		m := getUser(req, req.FormValue("name"))
+		if m.Pass == ""{
+			fmt.Printf("User Not Found")
+			http.Redirect(res, req, "/login", 302)
+			return
+		}
+		if(m.Pass != req.FormValue("password")){
+			fmt.Printf("Wrong Password Dumbass")
+			http.Redirect(res, req, "/login", 302)
+			return
+		}
+		m2 := Model(cookie)
+		m2.State = true
+		m2.Name = m.Name
+		m2.Pass = m.Pass
+		m2.Pictures = m.Pictures
 		xs := strings.Split(cookie.Value, "|")
 		id := xs[0]
 
-		cookie := currentVisitor(m, id)
+		cookie := currentVisitor(m2, id)
 		http.SetCookie(res, cookie)
 
 		http.Redirect(res, req, "/", 302)
@@ -112,7 +131,26 @@ func logout(res http.ResponseWriter, req *http.Request){
 //:( the lack of comments makes me want to cry
 func register(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
-	http.SetCookie(res, cookie)
+	if req.Method == "POST"{
+		user := getUser(req, req.FormValue("name"))
+		if(user.Name == req.FormValue("name")){
+			fmt.Printf("Username already taken")
+			http.Redirect(res, req, "/register", 302)
+			return
+		}
+		m := Model(cookie)
+		m.Name = req.FormValue("name")
+		m.Pass = req.FormValue("password")
+		setUser(req, m)
+		m.State = true
+		xs := strings.Split(cookie.Value, "|")
+		id := xs[0]
+
+		cookie := currentVisitor(m, id)
+		http.SetCookie(res, cookie)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
 	tpl.ExecuteTemplate(res, "register.html", nil)
 }
 

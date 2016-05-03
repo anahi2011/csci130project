@@ -2,50 +2,60 @@ package myapp
 
 import (
 	"net/http"
-	"os"
-	"bufio"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/memcache"
+	"google.golang.org/appengine/datastore"
+	"encoding/json"
+	"fmt"
 )
 
-func writeFile(c *http.Cookie){
-	f, err := os.OpenFile("users.txt", os.O_APPEND | os.O_WRONLY, 0666)
-	if(err != nil){
-		panic(err)
-	}
-	m := Model(c)
+func setUser(req *http.Request, m model){
+	ctx := appengine.NewContext(req)
 	bs := marshalModel(m)
-	_, err = f.WriteString(string(bs))
+	//Dank Memecache
+	item := memcache.Item{
+		Key: m.Name,
+		Value: bs,
+	}
+	memcache.Set(ctx, &item)
+
+	//Datastore
+	key := datastore.NewKey(ctx, "Users", m.Name, 0, nil)
+	_, err := datastore.Put(ctx, key, &m)
 	if err != nil {
 		panic(err)
+		return
 	}
-	f.Close();
 }
 
-func searchFile(name string) bool{
-	f, err := os.Open("users.txt")
-	if err != nil {
-		panic(err)
-	}
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		m := AltModel(scanner.Text())
-		if(m.Name == name){
-			return true
+func getUser(req *http.Request, name string) model{
+	ctx := appengine.NewContext(req)
+	//Dank Memcache
+	item, _ := memcache.Get(ctx, name)
+	var m model
+	if item != nil{
+		err := json.Unmarshal(item.Value, &m)
+		if err != nil{
+			fmt.Printf("error unmarhsalling: %v", err)
+			return model{}
 		}
 	}
-	return false;
-}
+	//Datastore
+	var m2 model
+	key := datastore.NewKey(ctx, "Users", name, 0, nil)
+	err := datastore.Get(ctx, key, &m2)
+	if err == datastore.ErrNoSuchEntity{
+		return model{}
+	} else if err != nil{
+		return model{}
+	}
 
-func getUser(name string) model{
-	f, err := os.Open("users.txt")
-	if err != nil {
-		panic(err)
+	//Reset Dank Memecache
+	bs := marshalModel(m2)
+	item1 := memcache.Item{
+		Key: m2.Name,
+		Value: bs,
 	}
-	scanner := bufio.NewScanner(f)
-	for scanner.Scan() {
-		m := AltModel(scanner.Text())
-		if(m.Name == name){
-			return m
-		}
-	}
-	return model{};
+	memcache.Set(ctx, &item1)
+	return m
 }
