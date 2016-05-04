@@ -57,5 +57,6 @@ func getUser(req *http.Request, name string) model{
 		Value: bs,
 	}
 	memcache.Set(ctx, &item1)
-	return m
+	return m2
 }
+

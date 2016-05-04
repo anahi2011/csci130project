@@ -38,10 +38,12 @@
 		<li><a href="#btf">Mission</a></li>
 		<li><a href="#contacts">Contacts</a></li>
 		{{if .State}}
+			<li><a href="/changepass">Change Password</a></li>
 			<li><a href="/logout">Logout</a></li>
 			<li>  Welcome {{.Name}}</li>
 		{{else}}
 			<li><a href="/login">Login</a></li>
+			<li><a href="/register">Register</a></li>
 		{{end}}
 	</ul>
 </div>

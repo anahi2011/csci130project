@@ -8,22 +8,18 @@ import (
 	"net/http"
 	"fmt"
 	//"encoding/json"
-	//"google.golang.org/appengine"
-	//"google.golang.org/appengine/datastore"
-	//"google.golang.org/appengine/log"
+	"google.golang.org/appengine"
+	"google.golang.org/appengine/datastore"
+	"google.golang.org/appengine/log"
+	"io"
+	"io/ioutil"
 )
 
 const gcsBucket = "csci-130group.appspot.com"
 
-type Word struct {
-	Name string
-}
-
 var tpl* template.Template
 
 func init(){
-
-	//http.HandleFunc("/api/check", wordCheck)
 
 	//first we parse our html and serve our css files.
 	//since matt loves local pics, the pictures are also being served....
@@ -37,18 +33,9 @@ func init(){
 	http.HandleFunc("/login", login)
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/register", register)
+	http.HandleFunc("/changepass", changePass)
+	http.HandleFunc("/api/check", wordCheck)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-/*func index(res http.ResponseWriter, req* http.Request){
-	if req.Method == "POST" {
->>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
-
-		var w Word
-		w.Name = req.FormValue("new-word")
-
-		ctx := appengine.NewContext(req)
-		log.Infof(ctx, "WORD SUBMITTED: %v", w.Name)
-
-*/
 }
 
 //every time the user loads the page they get a new uuid....
@@ -73,15 +60,6 @@ func index(res http.ResponseWriter, req* http.Request){
 
 
 	http.SetCookie(res, cookie)
-/*
-		key := datastore.NewKey(ctx, "Dictionary", w.Name, 0, nil)
-		_, err := datastore.Put(ctx, key, &w)
-		if err != nil {
-			http.Error(res, err.Error(), http.StatusInternalServerError)
-			return
-		}
-	}
->>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2*/
 	tpl.ExecuteTemplate(res, "index.html", m)
 }
 
@@ -154,6 +132,54 @@ func register(res http.ResponseWriter, req *http.Request){
 	tpl.ExecuteTemplate(res, "register.html", nil)
 }
 
+func changePass(res http.ResponseWriter, req *http.Request){
+	cookie := genCookie(res, req)
+	if req.Method == "POST"{
+		m := Model(cookie)
+		if req.FormValue("password") != m.Pass ||
+		   req.FormValue("password2") != req.FormValue("password3"){
+			fmt.Sprintf("Wrong!")
+			http.Redirect(res, req, "/", 302)
+			return
+		}
+		m.Pass = req.FormValue("password2")
+		m.State = false
+		setUser(req, m)
+		m.State = true
+		xs := strings.Split(cookie.Value, "|")
+		id := xs[0]
+
+		cookie := currentVisitor(m, id)
+		http.SetCookie(res, cookie)
+		http.Redirect(res, req, "/", 302)
+		return
+	}
+	tpl.ExecuteTemplate(res, "changepass.html", nil)
+}
+
+func wordCheck(res http.ResponseWriter, req *http.Request) {
+
+	ctx := appengine.NewContext(req)
+
+	// acquire the incoming word
+	var m model
+	bs, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Infof(ctx, err.Error())
+	}
+	name := string(bs)
+	log.Infof(ctx, "ENTERED wordCheck - name: %v", name)
+
+	// check the incoming word against the datastore
+	key := datastore.NewKey(ctx, "Users", name, 0, nil)
+	err = datastore.Get(ctx, key, &m)
+	//m = getUser(req, name)
+	if m.Name == name {
+		io.WriteString(res, "true")
+		return
+	}
+}
+
 
 //looks for cookie and returns it.
 //if it doesn't exits we make a new one and then sets it and returns it.
@@ -191,26 +217,3 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	return cookie
 
 }
-
-
-
-/*>>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
-
-func wordCheck(res http.ResponseWriter, req *http.Request) {
-
-	ctx := appengine.NewContext(req)
-
-	// acquire the incoming word
-	var w Word
-	json.NewDecoder(req.Body).Decode(&w)
-	log.Infof(ctx, "ENTERED wordCheck - w.Name: %v", w.Name)
-
-	// check the incoming word against the datastore
-	key := datastore.NewKey(ctx, "Dictionary", w.Name, 0, nil)
-	err := datastore.Get(ctx, key, &w)
-	if err != nil {
-		json.NewEncoder(res).Encode("false")
-		return
-	}
-	json.NewEncoder(res).Encode("true")
-}*/
