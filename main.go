@@ -144,10 +144,10 @@ func changePass(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
 	if req.Method == "POST"{
 		m := Model(cookie)
-		if req.FormValue("password") != m.Pass ||
-		   req.FormValue("password2") != req.FormValue("password3"){
+		if (req.FormValue("password") != m.Pass) ||
+		   (req.FormValue("password2") != req.FormValue("password3")){
 			fmt.Sprintf("Wrong!")
-			http.Redirect(res, req, "/", 302)
+			http.Redirect(res, req, "/changepass", 302)
 			return
 		}
 		m.Pass = req.FormValue("password2")
@@ -259,30 +259,3 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 	}
 	tpl.ExecuteTemplate(res,"gifs.html", nil)
 }*/
-
-
-
-
-
-
-/*>>>>>>> 70880bd3b3e1aa5d9fa834803870bc6e25c90ac2
-
-func wordCheck(res http.ResponseWriter, req *http.Request) {
-
-	ctx := appengine.NewContext(req)
-
-	// acquire the incoming word
-	var w Word
-	json.NewDecoder(req.Body).Decode(&w)
-	log.Infof(ctx, "ENTERED wordCheck - w.Name: %v", w.Name)
-
-	// check the incoming word against the datastore
-	key := datastore.NewKey(ctx, "Dictionary", w.Name, 0, nil)
-	err := datastore.Get(ctx, key, &w)
-	if err != nil {
-		json.NewEncoder(res).Encode("false")
-		return
-	}
-	json.NewEncoder(res).Encode("true")
-}*/
-
