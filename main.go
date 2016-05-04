@@ -119,7 +119,7 @@ func register(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
 	if req.Method == "POST"{
 		user := getUser(req, req.FormValue("name"))
-		if(user.Name == req.FormValue("name")){
+		if(user.Name == req.FormValue("name") || req.FormValue("name") == "" || req.FormValue("password") == ""){
 			fmt.Printf("Username already taken")
 			http.Redirect(res, req, "/register", 302)
 			return
@@ -144,7 +144,8 @@ func changePass(res http.ResponseWriter, req *http.Request){
 	cookie := genCookie(res, req)
 	if req.Method == "POST"{
 		m := Model(cookie)
-		if (req.FormValue("password") != m.Pass) ||
+		if (m.Pass == "") ||
+		   (req.FormValue("password") != m.Pass) ||
 		   (req.FormValue("password2") != req.FormValue("password3")){
 			fmt.Sprintf("Wrong!")
 			http.Redirect(res, req, "/changepass", 302)
