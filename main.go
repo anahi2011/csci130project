@@ -230,19 +230,25 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 
 //Load the images that belong in the folder with the users name
 func getPhotos(c *http.Cookie) *http.Cookie{
-	cookie := c
 	//Get the model from the cookie to prepare to append pictures
-	m := Model(cookie)
+	m := Model(c)
+
+
+
 	//Store all filenames that are in the user's folder in a slice of strings
 	files, _ := ioutil.ReadDir("./assets/imgs/" + m.Name + "/")
+
 	//for loop to append all file paths in m.Picures
 	for _, f := range files {
 		m.Pictures = append(m.Pictures, "/imgs/"+ m.Name + "/" + f.Name())
 		xs := strings.Split(c.Value, "|")
 		id := xs[0]
-		cookie = currentVisitor(m, id)
+		c = currentVisitor(m, id)
 	}
-	return cookie
+
+
+
+	return c
 }
 
 /*func gifs(res http.ResponseWriter, req *http.Request) {
