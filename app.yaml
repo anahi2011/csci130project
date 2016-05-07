@@ -1,5 +1,4 @@
-application: csci-130group
-version: 1
+application: csci-130project
 runtime: go
 api_version: go1
 

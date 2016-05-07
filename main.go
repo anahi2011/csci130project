@@ -19,7 +19,7 @@ import (
 	"io/ioutil"
 )
 
-const gcsBucket = "csci-130group.appspot.com"
+//const gcsBucket = "csci-130project.appspot.com"
 
 var tpl* template.Template
 
