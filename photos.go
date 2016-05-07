@@ -14,7 +14,7 @@ import (
 )
 
 // I added a parameter.. The request
-func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, req http.Request) *http.Cookie {
+func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, req *http.Request) *http.Cookie {
 	defer src.Close()
 	//Limit kinds of files you can upload
 	if(hdr.Filename != ".jpg" ||
@@ -70,13 +70,13 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 
 	if(err != nil){
 		log.Errorf(ctx, "uploadPhoto: unable to write data to bucket")
-		return
+		return c
 	}
 
 	err = writer.Close()
 	if(err != nil){
 		log.Errorf(ctx, "uploadPhoto closing writer")
-		return
+		return c
 	}
 
 	return addPhoto(fName, filepath.Ext(hdr.Filename), c)

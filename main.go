@@ -39,6 +39,8 @@ func init(){
 	http.HandleFunc("/logout", logout)
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/changepass", changePass)
+	http.HandleFunc("/files", files)
+	http.HandleFunc("/photos", gallery)
 	http.HandleFunc("/api/check", wordCheck)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 
@@ -165,6 +167,26 @@ func changePass(res http.ResponseWriter, req *http.Request){
 		return
 	}
 	tpl.ExecuteTemplate(res, "changepass.html", nil)
+}
+
+func files(res http.ResponseWriter, req *http.Request){
+	cookie := genCookie(res, req)
+	if req.Method == "POST" {
+		src, hdr, err := req.FormFile("data")
+		if err != nil{
+			log.Println("error uploading photo: ", err)
+		}
+		cookie = uploadPhoto(src, hdr, cookie, req)
+		http.SetCookie(res, cookie)
+	}
+	m := Model(cookie)
+	tpl.ExecuteTemplate(res, "files.html", m)
+}
+
+func gallery(res http.ResponseWriter, req *http.Request){
+	cookie := genCookie(res, req)
+	m := Model(cookie)
+	tpl.ExecuteTemplate(res, "gallery.html", m)
 }
 
 func wordCheck(res http.ResponseWriter, req *http.Request) {
