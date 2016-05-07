@@ -7,7 +7,7 @@ import (
 	//"io"
 	"net/http"
 	"fmt"
-
+	"google.golang.org/cloud/storage"
 	//"encoding/json"
 	//"google.golang.org/appengine/urlfetch"
 
@@ -229,24 +229,57 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 }
 
 //Load the images that belong in the folder with the users name
-func getPhotos(c *http.Cookie) *http.Cookie{
+//I ADDED A PARAMETER THE REQUEST
+func getPhotos(c *http.Cookie, req http.Request) *http.Cookie{
 	//Get the model from the cookie to prepare to append pictures
 	m := Model(c)
 
+	//grabbing context for error checking
+	ctx := appengine.NewContext(req)
 
+	//creating a new client from our context
+	client, err := storage.NewClient(ctx)
+	if err != nil{
+		log.Errorf(ctx, "Error in getPhotos client err")
+	}
+	defer client.Close()
+
+	//grabbing a client fronm our specific bucket
+	bucket := client.Bucket(gcsBucket)
+
+	//making a query so we find a specific user's files
+	q := &storage.Query{
+		Prefix: m.Name,
+	}
 
 	//Store all filenames that are in the user's folder in a slice of strings
-	files, _ := ioutil.ReadDir("./assets/imgs/" + m.Name + "/")
+	listObjects, err := bucket.List(ctx, q)
+	if err != nil {
+		log.Errorf(ctx, "getPhotos: unable to list bucket %q: %v", gcsBucket, err)
+		return c
+	}
+	//for loop to append all file paths
+	for _, obj := range listObjects.Results {
+		m.Files = append(m.Files, obj.Name)
+	}
 
-	//for loop to append all file paths in m.Picures
-	for _, f := range files {
-		m.Pictures = append(m.Pictures, "/imgs/"+ m.Name + "/" + f.Name())
-		xs := strings.Split(c.Value, "|")
-		id := xs[0]
-		c = currentVisitor(m, id)
+	q.Prefix = m.Name + "/photo/"
+	listObjects, err = bucket.List(ctx, q)
+	if(err != nil){
+		log.Errorf(ctx, "getPhotos: unable to list bucket", gcsBucket, err)
+		return c
 	}
 
 
+	//for loop to append all file paths in m.Picures
+	for _, obj := range listObjects.Results {
+		m.Pictures = append(m.Pictures, obj.Name)
+	}
+
+	xs := strings.Split(c.Value, "|")
+	id := xs[0]
+	
+	c = currentVisitor(m, id)
 
 	return c
 }
