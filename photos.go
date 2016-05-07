@@ -27,10 +27,17 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 
 	var fName string
 
+	//making our filenames easier to work with and easy to query
+	if(hdr.Filename == ".jpg" || hdr.Filename == ".png"){
+		fName = m.Name + "/photo/"
+	}else{
+		fName = m.Name + "/text/"
+	}
+
 	// get filename with extension and store it in fName.
 	//just setting up a basic file structure
 	//bucket/ userName/encryptedFilename
-	fName =  m.Name + getSha(src) + filepath.Ext(hdr.Filename)
+	fName = getSha(src) + filepath.Ext(hdr.Filename)
 
 
 	//grabbing context for error checking
