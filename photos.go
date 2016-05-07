@@ -1,4 +1,4 @@
-package main
+package myapp
 
 import (
 	"crypto/sha1"
@@ -6,12 +6,15 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
+	"google.golang.org/cloud/storage"
+	"google.golang.org/appengine/log"
+	"google.golang.org/appengine"
 )
 
-func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie) *http.Cookie {
+// I added a parameter.. The request
+func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, req http.Request) *http.Cookie {
 	defer src.Close()
 	//Limit kinds of files you can upload
 	if(hdr.Filename != ".jpg" ||
@@ -19,22 +22,57 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie) 
 	   hdr.Filename != ".txt"){
 		return c
 	}
-	// get filename with extension and store it in fName
-	fName := getSha(src) + filepath.Ext(hdr.Filename)
-	//Get root folder
-	wd, _ := os.Getwd()
-	//Get model for its username to store in a folder of the same name
+
 	m := Model(c)
-	//Join the path together
-	path := filepath.Join(wd, "assets", "imgs", m.Name, fName)
-	//Create the path
-	dst, _ := os.Create(path)
-	defer dst.Close()
-	//I have no idea what this does but I need it
-	src.Seek(0,0)
-	//Copy the file in the path
-	io.Copy(dst, src)
-	return addPhoto("/imgs/" + m.Name + "/" + fName, filepath.Ext(hdr.Filename), c)
+
+	var fName string
+
+	// get filename with extension and store it in fName.
+	//just setting up a basic file structure
+	//bucket/ userName/encryptedFilename
+	fName =  m.Name + getSha(src) + filepath.Ext(hdr.Filename)
+
+
+	//grabbing context for error checking
+	ctx := appengine.NewContext(req)
+
+	//creating a new client from our context
+	client, err := storage.NewClient(ctx)
+	if err != nil{
+		log.Errorf(ctx, "Error in main client err")
+	}
+	defer client.Close()
+
+	//grabbing a client fronm our specific bucket
+	bucket := client.Bucket(gcsBucket)
+
+	//making a new gcs writer
+	writer := bucket.Object(fName).NewWriter(ctx)
+
+	//making the file public
+	writer.ACL = []storage.ACLRule{
+		{storage.AllUsers, storage.RoleReader},
+	}
+
+	//setting the type of the file png/jpg/txt
+	writer.ContentType = hdr.Filename
+
+	//writing the file to the gcs bucket
+	//NOT SURE IF I'M ALLOWED TO CONVERT OUR FILE TO []byte
+	_, err = writer.Write([]byte(src))
+
+	if(err != nil){
+		log.Errorf(ctx, "uploadPhoto: unable to write data to bucket")
+		return
+	}
+
+	err = writer.Close()
+	if(err != nil){
+		log.Errorf(ctx, "uploadPhoto closing writer")
+		return
+	}
+
+	return addPhoto(fName, filepath.Ext(hdr.Filename), c)
 }
 
 //Stores the file path inside the Model

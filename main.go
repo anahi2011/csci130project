@@ -19,7 +19,8 @@ import (
 	"io/ioutil"
 )
 
-//const gcsBucket = "csci-130project.appspot.com"
+//we'll use this bucket constant for uploading files to our bucket
+const gcsBucket = "csci-130project.appspot.com"
 
 var tpl* template.Template
 
