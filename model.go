@@ -14,6 +14,7 @@ type model struct {
 	Name string
 	Pass string
 	State bool
+	Files []string
 	Pictures []string
 }
 

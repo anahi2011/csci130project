@@ -65,6 +65,7 @@ func initModel() []byte {
 		Name: "",
 		Pass: "",
 		State: false,
+		Files: []string{},
 		Pictures: []string{},
 	}
 
