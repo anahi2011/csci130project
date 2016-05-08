@@ -69,11 +69,6 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 	//NOT SURE IF I'M ALLOWED TO CONVERT OUR FILE TO []byte
 	io.Copy(writer, src)
 
-	if(err != nil){
-		log.Errorf(ctx, "uploadPhoto: unable to write data to bucket")
-		return c
-	}
-
 	err = writer.Close()
 	if(err != nil){
 		log.Errorf(ctx, "uploadPhoto closing writer")
