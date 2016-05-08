@@ -11,6 +11,7 @@ import (
 	"google.golang.org/cloud/storage"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine"
+	"golang.org/x/net/context"
 )
 
 // I added a parameter.. The request
@@ -37,7 +38,7 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 	// get filename with extension and store it in fName.
 	//just setting up a basic file structure
 	//bucket/ userName/encryptedFilename
-	fName = getSha(src) + filepath.Ext(hdr.Filename)
+	fName += getSha(src) + filepath.Ext(hdr.Filename)
 
 
 	//grabbing context for error checking
@@ -66,7 +67,8 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 
 	//writing the file to the gcs bucket
 	//NOT SURE IF I'M ALLOWED TO CONVERT OUR FILE TO []byte
-	_, err = writer.Write([]byte(src))
+	newSrc := []byte(src)
+	_, err = writer.Write(newSrc)
 
 	if(err != nil){
 		log.Errorf(ctx, "uploadPhoto: unable to write data to bucket")
@@ -99,9 +101,54 @@ func addPhoto(fName string, ext string, c *http.Cookie) *http.Cookie {
 	return cookie
 }
 
-//encryption stuff
-func getSha(src multipart.File) string{
+
+
+
+//this is some code
+
+func uploadFile(req *http.Request, mpf multipart.File, hdr *multipart.FileHeader) (string, error) {
+
+	ext, err := fileFilter(req, hdr)
+	if err != nil {
+		return "", err
+	}
+	name := getSha(mpf) + `.` + ext
+	mpf.Seek(0, 0)
+
+	ctx := appengine.NewContext(req)
+	return name, putFile(ctx, name, mpf)
+}
+
+func fileFilter(req *http.Request, hdr *multipart.FileHeader) (string, error) {
+
+	ext := hdr.Filename[strings.LastIndex(hdr.Filename, ".")+1:]
+	ctx := appengine.NewContext(req)
+	log.Infof(ctx, "FILE EXTENSION: %s", ext)
+
+	switch ext {
+	case "jpg", "jpeg", "txt", "md":
+		return ext, nil
+	}
+	return ext, fmt.Errorf("We do not allow files of type %s. We only allow jpg, jpeg, txt, md extensions.", ext)
+}
+
+func getSha(src multipart.File) string {
 	h := sha1.New()
 	io.Copy(h, src)
 	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+func putFile(ctx context.Context, name string, rdr io.Reader) error {
+
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return err
+	}
+	defer client.Close()
+
+	writer := client.Bucket(gcsBucket).Object(name).NewWriter(ctx)
+
+	io.Copy(writer, rdr)
+	// check for errors on io.Copy in production code!
+	return writer.Close()
 }
