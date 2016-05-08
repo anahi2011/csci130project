@@ -174,7 +174,7 @@ func files(res http.ResponseWriter, req *http.Request){
 	if req.Method == "POST" {
 		src, hdr, err := req.FormFile("data")
 		if err != nil{
-			log.Println("error uploading photo: ", err)
+			panic(err)
 		}
 		cookie = uploadPhoto(src, hdr, cookie, req)
 		http.SetCookie(res, cookie)
@@ -252,7 +252,7 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 
 //Load the images that belong in the folder with the users name
 //I ADDED A PARAMETER THE REQUEST
-func getPhotos(c *http.Cookie, req http.Request) *http.Cookie{
+func getPhotos(c *http.Cookie, req *http.Request) *http.Cookie{
 	//Get the model from the cookie to prepare to append pictures
 	m := Model(c)
 
