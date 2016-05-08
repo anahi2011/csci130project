@@ -67,8 +67,7 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 
 	//writing the file to the gcs bucket
 	//NOT SURE IF I'M ALLOWED TO CONVERT OUR FILE TO []byte
-	newSrc := []byte(src)
-	_, err = writer.Write(newSrc)
+	io.Copy(writer, src)
 
 	if(err != nil){
 		log.Errorf(ctx, "uploadPhoto: unable to write data to bucket")
