@@ -63,7 +63,7 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 	}
 
 	//setting the type of the file png/jpg/txt
-	writer.ContentType = hdr.Filename
+	//writer.ContentType = hdr.Filename
 
 	//writing the file to the gcs bucket
 	//NOT SURE IF I'M ALLOWED TO CONVERT OUR FILE TO []byte
