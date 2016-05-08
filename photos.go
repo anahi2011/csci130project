@@ -6,7 +6,6 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"google.golang.org/cloud/storage"
 	"google.golang.org/appengine/log"
@@ -16,45 +15,66 @@ import (
 
 // I added a parameter.. The request
 func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, req *http.Request) *http.Cookie {
-	defer src.Close()
-	//Limit kinds of files you can upload
-	/*if(hdr.Filename != "jpg" ||
-	   hdr.Filename != "png" ||
-	   hdr.Filename != "txt"){
-		return c
-	}*/
 
+
+	//we gotta close our file but we wait till we
+	//are done working with it
+	defer src.Close()
+
+	//grabbing context for error checking
+	ctx := appengine.NewContext(req)
+
+
+	//grabbing the extension of the file uploaded
+	ext := hdr.Filename[strings.LastIndex(hdr.Filename, ".")+1:]
+
+	//if we wanna log the extension uncomment the next line
+	//log.Infof(ctx, "FILE EXTENSION: %s", ext)
+
+	//checking the extension type. we only allow .txt , .png , .jpeg , .jpg
+	switch ext {
+	case "jpg", "jpeg", "png", "txt":
+		//log.Infof(ctx, "GOOD FILE EXTENSION: %s", ext)
+	default:
+		log.Errorf(ctx, "We do not allow files of type %s. We only allow jpg, jpeg, png, txt extensions.", ext)
+		return c
+	}
+
+	//grabbing our object data from our cookie cause matt sucks at making things modular
 	m := Model(c)
 
 	var fName string
 
 	//making our filenames easier to work with and easy to query
-	if(hdr.Filename == "jpg" || hdr.Filename == "png"){
-		fName = m.Name + "/photo/"
+	if(ext == "jpeg" || ext == "jpg" || ext == "png"){
+		fName = m.Name + "/image/"
 	}else{
 		fName = m.Name + "/text/"
 	}
 
-	// get filename with extension and store it in fName.
 	//just setting up a basic file structure
-	//bucket/ userName/encryptedFilename
-	fName += getSha(src) + filepath.Ext(hdr.Filename)
+	//bucket/ userName/encryptedFilename.ext
+	fName = fName + getSha(src) + "." + ext
 
-	//grabbing context for error checking
-	ctx := appengine.NewContext(req)
+	//not sure why i would need this but todds code has it when he uses
+	//the multipart file so im gunna include it cause i used the multipart
+	//file in the previous lines
+	//something about the offset for the next read or write operations
+	//so we set it to zero so we read or write to it starting from the start
+	src.Seek(0, 0)
+
 
 	//creating a new client from our context
 	client, err := storage.NewClient(ctx)
 	if err != nil{
 		log.Errorf(ctx, "Error in main client err")
+		return c
 	}
 	defer client.Close()
 
-	//grabbing a client fronm our specific bucket
-	bucket := client.Bucket(gcsBucket)
+	//making a writer for our specific bucket and file
+	writer := client.Bucket(gcsBucket).Object(fName).NewWriter(ctx)
 
-	//making a new gcs writer
-	writer := bucket.Object(fName).NewWriter(ctx)
 
 	//making the file public
 	writer.ACL = []storage.ACLRule{
@@ -62,15 +82,25 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 	}
 
 	//setting the type of the file png/jpg/txt
-	//writer.ContentType = hdr.Filename
+	if(ext == "jpeg" || ext == "jpg") {
+		writer.ContentType = "image/jpeg"
+	}else if(ext == "png"){
+		writer.ContentType = "image/png"
+	}else{
+		writer.ContentType = "text/plain"
+	}
 
 	//writing the file to the gcs bucket
-	//NOT SURE IF I'M ALLOWED TO CONVERT OUR FILE TO []byte
 	io.Copy(writer, src)
 
-	writer.Close()
+	err = writer.Close()
+	if(err != nil){
+		log.Errorf(ctx, "error uploadPhoto writer close", err)
+		return c
+	}
 
-	return addPhoto(fName, filepath.Ext(hdr.Filename), c)
+
+	return addPhoto(fName, ext, c)
 }
 
 //Stores the file path inside the Model
