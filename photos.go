@@ -18,18 +18,18 @@ import (
 func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, req *http.Request) *http.Cookie {
 	defer src.Close()
 	//Limit kinds of files you can upload
-	if(hdr.Filename != ".jpg" ||
-	   hdr.Filename != ".png" ||
-	   hdr.Filename != ".txt"){
+	/*if(hdr.Filename != "jpg" ||
+	   hdr.Filename != "png" ||
+	   hdr.Filename != "txt"){
 		return c
-	}
+	}*/
 
 	m := Model(c)
 
 	var fName string
 
 	//making our filenames easier to work with and easy to query
-	if(hdr.Filename == ".jpg" || hdr.Filename == ".png"){
+	if(hdr.Filename == "jpg" || hdr.Filename == "png"){
 		fName = m.Name + "/photo/"
 	}else{
 		fName = m.Name + "/text/"
@@ -88,7 +88,7 @@ func addPhoto(fName string, ext string, c *http.Cookie) *http.Cookie {
 	//Get Model for m.Pictures
 	m := Model(c)
 	//If the file is an image with jpg or png extension, put it in m.Pictures
-	if ext == ".jpg" || ext == ".png"{
+	if ext == "jpg" || ext == "png"{
 		m.Pictures = append(m.Pictures, fName)
 	}
 	//Store the file path in string slice, m.Files
