@@ -20,7 +20,7 @@ import (
 )
 
 //we'll use this bucket constant for uploading files to our bucket
-const gcsBucket = "csci-130project.appspot.com"
+const gcsBucket = "user-images"
 
 var tpl* template.Template
 
