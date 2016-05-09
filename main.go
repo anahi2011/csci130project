@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"google.golang.org/cloud/storage"
 	//"encoding/json"
-	//"google.golang.org/appengine/urlfetch"
+	"google.golang.org/appengine/urlfetch"
 
-	//"encoding/json"
+	"encoding/json"
 	"google.golang.org/appengine"
 	"google.golang.org/appengine/datastore"
 	"google.golang.org/appengine/log"
@@ -42,9 +42,9 @@ func init(){
 	http.HandleFunc("/files", files)
 	http.HandleFunc("/photos", gallery)
 	http.HandleFunc("/api/check", wordCheck)
+	http.HandleFunc("/gif", gif)
+	http.HandleFunc("/giffy", giffy)
 	http.Handle("/favicon.ico", http.NotFoundHandler())
-
-	//http.HandleFunc("/gifs", gifs)
 
 
 }
@@ -190,6 +190,16 @@ func gallery(res http.ResponseWriter, req *http.Request){
 	tpl.ExecuteTemplate(res, "gallery.html", m)
 }
 
+func gif(res http.ResponseWriter, req *http.Request){
+	cookie := genCookie(res, req)
+	m := Model(cookie)
+	if req.Method == "POST"{
+		http.Redirect(res, req, "/giffy", 302)
+		return
+	}
+	tpl.ExecuteTemplate(res, "gif.html", m)
+}
+
 func wordCheck(res http.ResponseWriter, req *http.Request) {
 
 	ctx := appengine.NewContext(req)
@@ -301,10 +311,10 @@ func getPhotos(c *http.Cookie, req *http.Request, res http.ResponseWriter) *http
 }
 
 
-/*func gifs(res http.ResponseWriter, req *http.Request) {
+func giffy(res http.ResponseWriter, req *http.Request) {
 	ctx := appengine.NewContext(req)
 
-	t := req.FormValue("term")
+	t := req.FormValue("term") + "ferret"
 
 	client := urlfetch.Client(ctx)
 	result, err := client.Get("http://api.giphy.com/v1/gifs/search?q=" + t + "&api_key=dc6zaTOxFJmzC")
@@ -331,5 +341,7 @@ func getPhotos(c *http.Cookie, req *http.Request, res http.ResponseWriter) *http
 	for _, img := range obj.Data {
 		fmt.Fprintf(res, `<a href="%v">%v</a><img src="%v"><br>`, img.URL, img.URL, img.Images.Original.URL)
 	}
-	tpl.ExecuteTemplate(res,"gifs.html", nil)
-}*/
+	cookie := genCookie(res, req)
+	m := Model(cookie)
+	tpl.ExecuteTemplate(res,"gifs.html", m)
+}

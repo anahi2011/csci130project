@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Files</title>
+		<title>Login</title>
 		<link rel="stylesheet" type="text/css" href="../assets/css/main.css">
 	</head>
 
@@ -12,7 +12,7 @@
 				<li><a href="/#atf">Home</a></li>
 				<li><a href="/#btf">Mission</a></li>
 				<li><a href="/#contacts">Contacts</a></li>
-        			<li><a href="/gif">Gifs</a></li>
+				<li><a href="/gif">Gifs</a></li>
 				{{if .State}}
 					<li><a href="/changepass">Change Password</a></li>
 					<li><a href="/files">Files</a></li>
@@ -22,13 +22,13 @@
 				{{end}}
 			</ul>
 		</div>
-		<div id="gallery">
-			<h1>Gallery</h1>
-			<ul>
-			{{range .Pictures}}
-				<li><a href="{{.}}"><img src="{{.}}" style="width:100px; height:100px;"></a></li>
-			{{end}}
-			</ul>
+		<div id="atf">
+			<h1>Find Ferret Gifs</h1>
+			<h2>Enter Adjective</h2>
+			<form method="POST">
+				<input type="text" name="term">
+				<input type="submit">
+			</form>
 		</div>	
 	</body>
 </html>
