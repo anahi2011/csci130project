@@ -103,6 +103,7 @@ func login(res http.ResponseWriter, req *http.Request){
 		id := xs[0]
 
 		cookie := currentVisitor(m2, id)
+		cookie = getPhotos(cookie,req,res)
 		http.SetCookie(res, cookie)
 
 		http.Redirect(res, req, "/", 302)
