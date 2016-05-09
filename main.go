@@ -287,11 +287,9 @@ func getPhotos(c *http.Cookie, req *http.Request, res http.ResponseWriter) *http
 		ext := obj.Name[strings.LastIndex(obj.Name, ".")+1:]
 		//log.Infof(d.ctx, "%v", ext)
 		if ext == "jpg" || ext == "jpeg" || ext == "png"{
-
-			fmt.Fprintf(res, `<br><img src="%v"><br>%v<br>`, obj.MediaLink, obj.MediaLink)
-		} else {
-			io.WriteString(res, obj.Name+"<br>")
+			m.Pictures = append(m.Pictures, obj.MediaLink)
 		}
+		m.Files = append(m.Files, obj.MediaLink)
 	}
 
 	xs := strings.Split(c.Value, "|")
