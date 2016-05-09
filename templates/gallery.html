@@ -22,11 +22,13 @@
 				{{end}}
 			</ul>
 		</div>
-		<div id="atf">
-			<h1>Files</h1>
+		<div id="gallery">
+			<h1>Gallery</h1>
+			<ul>
 			{{range .Pictures}}
-				<a href="{{.}}"><img src="{{.}}" style="width:'100px'; height:'100px'"></a>
+				<li><a href="{{.}}"><img src="{{.}}" style="width:100px; height:100px;"></a></li>
 			{{end}}
+			</ul>
 		</div>	
 	</body>
 </html>

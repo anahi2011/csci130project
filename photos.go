@@ -109,7 +109,7 @@ func addPhoto(fName string, ext string, c *http.Cookie) *http.Cookie {
 	//Get Model for m.Pictures
 	m := Model(c)
 	//If the file is an image with jpg or png extension, put it in m.Pictures
-	if ext == "jpg" || ext == "png"{
+	if ext == "jpg" || ext == "png" || ext == "jpeg"{
 		m.Pictures = append(m.Pictures, fName)
 	}
 	//Store the file path in string slice, m.Files
