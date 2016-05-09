@@ -301,6 +301,7 @@ func getPhotos(c *http.Cookie, req *http.Request, res http.ResponseWriter) *http
 	return c
 }
 
+
 /*func gifs(res http.ResponseWriter, req *http.Request) {
 	ctx := appengine.NewContext(req)
 
