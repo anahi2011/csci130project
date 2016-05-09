@@ -10,6 +10,7 @@ import (
 	"google.golang.org/cloud/storage"
 	"google.golang.org/appengine/log"
 	"google.golang.org/appengine"
+	"golang.org/x/net/context"
 )
 
 // I added a parameter.. The request
@@ -98,6 +99,7 @@ func uploadPhoto(src multipart.File, hdr *multipart.FileHeader, c *http.Cookie, 
 		return c
 	}
 
+	fName, err = getFileLink(ctx, fName)
 
 	return addPhoto(fName, ext, c)
 }
@@ -123,4 +125,20 @@ func getSha(src multipart.File) string {
 	h := sha1.New()
 	io.Copy(h, src)
 	return fmt.Sprintf("%x", h.Sum(nil))
+}
+
+
+//returns the download link
+func getFileLink(ctx context.Context, name string) (string, error) {
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return "", err
+	}
+	defer client.Close()
+
+	attrs, err := client.Bucket(gcsBucket).Object(name).Attrs(ctx)
+	if err != nil {
+		return "", err
+	}
+	return attrs.MediaLink, nil
 }

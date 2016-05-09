@@ -251,8 +251,8 @@ func genCookie(res http.ResponseWriter, req *http.Request) *http.Cookie{
 }
 
 //Load the images that belong in the folder with the users name
-//I ADDED A PARAMETER THE REQUEST
-func getPhotos(c *http.Cookie, req *http.Request) *http.Cookie{
+//I ADDED A PARAMETER THE REQUEST and RESPONSE
+func getPhotos(c *http.Cookie, req *http.Request, res http.ResponseWriter) *http.Cookie{
 	//Get the model from the cookie to prepare to append pictures
 	m := Model(c)
 
@@ -282,20 +282,15 @@ func getPhotos(c *http.Cookie, req *http.Request) *http.Cookie{
 	}
 	//for loop to append all file paths
 	for _, obj := range listObjects.Results {
-		m.Files = append(m.Files, obj.Name)
-	}
 
-	q.Prefix = m.Name + "/photo/"
-	listObjects, err = bucket.List(ctx, q)
-	if(err != nil){
-		log.Errorf(ctx, "getPhotos: unable to list bucket", gcsBucket, err)
-		return c
-	}
+		ext := obj.Name[strings.LastIndex(obj.Name, ".")+1:]
+		//log.Infof(d.ctx, "%v", ext)
+		if ext == "jpg" || ext == "jpeg" || ext == "png"{
 
-
-	//for loop to append all file paths in m.Picures
-	for _, obj := range listObjects.Results {
-		m.Pictures = append(m.Pictures, obj.Name)
+			fmt.Fprintf(res, `<br><img src="%v"><br>%v<br>`, obj.MediaLink, obj.MediaLink)
+		} else {
+			io.WriteString(res, obj.Name+"<br>")
+		}
 	}
 
 	xs := strings.Split(c.Value, "|")
