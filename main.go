@@ -314,7 +314,7 @@ func getPhotos(c *http.Cookie, req *http.Request, res http.ResponseWriter) *http
 func giffy(res http.ResponseWriter, req *http.Request) {
 	ctx := appengine.NewContext(req)
 
-	t := req.FormValue("term") + "ferret"
+	t := req.FormValue("term") + "_ferret"
 
 	client := urlfetch.Client(ctx)
 	result, err := client.Get("http://api.giphy.com/v1/gifs/search?q=" + t + "&api_key=dc6zaTOxFJmzC")
@@ -339,7 +339,7 @@ func giffy(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	for _, img := range obj.Data {
-		fmt.Fprintf(res, `<a href="%v">%v</a><img src="%v"><br>`, img.URL, img.URL, img.Images.Original.URL)
+		fmt.Fprintf(res, `<a href="%v"><img src="%v"></a><br>`, img.URL, img.Images.Original.URL)
 	}
 	cookie := genCookie(res, req)
 	m := Model(cookie)
